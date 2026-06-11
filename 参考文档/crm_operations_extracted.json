@@ -1,0 +1,1437 @@
+[
+  {
+    "num": "1",
+    "name": "listProject",
+    "desc": "项目列表查询",
+    "graphql": [
+      "query ListProject($search: ProjectSearchParam!, $pagination: PaginationParam, $sort_by: SortBy!) {\n  listProject(search: $search, pagination: $pagination, sort_by: $sort_by) {\n    total\n    skip\n    limit\n    data {\n      id\n      name\n      stage\n      level\n      type\n      deal_date\n      sign_date\n      deal_amount\n      win_rate\n      company { id name common_name }\n      claimBy { id user { name } }\n      created_at\n      updated_at\n    }\n  }\n}"
+    ],
+    "json_vars": [
+      "{\n  \"search\": {\n    \"name\": [\"银行\"],\n    \"stage\": [\"tech_pre_research\", \"plan_discuss\"],\n    \"claim_by\": [\"user_001\"],\n    \"deal_date\": { \"from\": \"2026-01-01T00:00:00+08:00\", \"to\": \"2026-12-31T23:59:59+08:00\" }\n  },\n  \"pagination\": { \"skip\": 0, \"limit\": 20 },\n  \"sort_by\": { \"by\": \"updatedAt\", \"order\": -1 }\n}"
+    ]
+  },
+  {
+    "num": "2",
+    "name": "projectInfo",
+    "desc": "项目详情查询",
+    "graphql": [
+      "query ProjectInfo($id: ID!) {\n  projectInfo(id: $id) {\n    id\n    name\n    stage\n    level\n    type\n    deal_date\n    sign_date\n    deal_amount\n    win_rate\n    calc_type\n    contract_sign_type\n    delivery_type\n    property\n    deal_logic\n    company { id name }\n    claimBy { id user { name } }\n    clients { id name phone email position }\n    contracts { id name contractState { name } }\n    created_at\n    updated_at\n  }\n}"
+    ],
+    "json_vars": [
+      "{ \"id\": \"proj_123\" }"
+    ]
+  },
+  {
+    "num": "3",
+    "name": "createProject",
+    "desc": "创建项目",
+    "graphql": [
+      "mutation CreateProject($input: InputProject!) {\n  createProject(input: $input) {\n    id\n    name\n    stage\n    level\n    deal_date\n    sign_date\n    created_at\n  }\n}"
+    ],
+    "json_vars": [
+      "{\n  \"input\": {\n    \"name\": \"XX银行安全防护项目\",\n    \"company_id\": \"comp_456\",\n    \"type\": \"normal\",\n    \"level\": \"significant\",\n    \"deal_date\": \"2026-08-01T00:00:00+08:00\",\n    \"sign_date\": \"2026-09-01T00:00:00+08:00\",\n    \"stage\": \"leads\",\n    \"stage_info\": {\n      \"info\": \"新建项目\",\n      \"attachments\": [],\n      \"todos\": []\n    },\n    \"leads_convert_condition\": [],\n    \"project_promise\": \"delivery_standard\",\n    \"extra\": { \"source\": \"线索转化\" }\n  }\n}"
+    ]
+  },
+  {
+    "num": "4",
+    "name": "updateProjectBasicInfo",
+    "desc": "更新项目基本信息",
+    "graphql": [
+      "mutation UpdateProjectBasicInfo($id: ID!, $name: String!, $level: ProjectLevel!) {\n  updateProjectBasicInfo(id: $id, name: $name, level: $level) {\n    id\n    name\n    level\n    updated_at\n  }\n}"
+    ],
+    "json_vars": [
+      "{\n  \"id\": \"proj_123\",\n  \"name\": \"XX银行安全防护项目（更新）\",\n  \"level\": \"ordinary\"\n}"
+    ]
+  },
+  {
+    "num": "5",
+    "name": "updateProjectStage",
+    "desc": "更新项目阶段",
+    "graphql": [
+      "mutation UpdateProjectStage(\n  $project_id: String!\n  $stage: ProjectStage!\n  $deal_logic: DealLogic!\n  $artificial_reason: String\n  $stage_info: InputProjectStageInfo!\n  $project_promise: ProjectStageInfoProjectPromise\n  $main_reason: String\n  $minor_reason: [String!]\n  $invalid_reason: String\n  $win_rate: String!\n  $deal_date: Time!\n  $sign_date: Time!\n  $contract_sign_type: ContractSignType\n  $delivery_type: DeliveryType\n  $partners: [InputPartner!]\n) {\n  updateProjectStage(\n    project_id: $project_id\n    stage: $stage\n    deal_logic: $deal_logic\n    artificial_reason: $artificial_reason\n    stage_info: $stage_info\n    project_promise: $project_promise\n    main_reason: $main_reason\n    minor_reason: $minor_reason\n    invalid_reason: $invalid_reason\n    win_rate: $win_rate\n    deal_date: $deal_date\n    sign_date: $sign_date\n    contract_sign_type: $contract_sign_type\n    delivery_type: $delivery_type\n    partners: $partners\n  )\n}"
+    ],
+    "json_vars": [
+      "{\n  \"project_id\": \"proj_123\",\n  \"stage\": \"tech_pre_research\",\n  \"deal_logic\": \"system\",\n  \"artificial_reason\": null,\n  \"stage_info\": {\n    \"info\": \"进入技术预研阶段\",\n    \"attachments\": [],\n    \"todos\": []\n  },\n  \"project_promise\": \"delivery_standard\",\n  \"main_reason\": \"客户发起技术交流\",\n  \"minor_reason\": [],\n  \"invalid_reason\": null,\n  \"win_rate\": \"60%\",\n  \"deal_date\": \"2026-06-30T00:00:00+08:00\",\n  \"sign_date\": \"2026-07-15T00:00:00+08:00\",\n  \"contract_sign_type\": \"direct\",\n  \"delivery_type\": \"standard\",\n  \"partners\": []\n}"
+    ]
+  },
+  {
+    "num": "6",
+    "name": "updateProjectDetail",
+    "desc": "更新项目明细",
+    "graphql": [
+      "mutation UpdateProjectDetail(\n  $project_id: ID!\n  $calc_type: ProjectCalcType!\n  $products: [InputProduct!]\n  $contract_sign_type: ContractSignType!\n  $property: ProjectProperty!\n  $delivery_type: DeliveryType\n  $partners: [InputPartner!]\n  $solution_ids: [String!]\n) {\n  updateProjectDetail(\n    project_id: $project_id\n    calc_type: $calc_type\n    products: $products\n    contract_sign_type: $contract_sign_type\n    property: $property\n    delivery_type: $delivery_type\n    partners: $partners\n    solution_ids: $solution_ids\n  )\n}"
+    ],
+    "json_vars": [
+      "{\n  \"project_id\": \"proj_123\",\n  \"calc_type\": \"standard\",\n  \"products\": [\n    { \"product_id\": \"prod_001\", \"quantity\": 2, \"price\": 150000 }\n  ],\n  \"contract_sign_type\": \"direct\",\n  \"property\": \"new\",\n  \"delivery_type\": \"self\",\n  \"partners\": [],\n  \"solution_ids\": []\n}"
+    ]
+  },
+  {
+    "num": "7",
+    "name": "updateProjectLabels",
+    "desc": "更新项目标签",
+    "graphql": [
+      "mutation UpdateProjectLabels($id: ID!, $labels: [String!]) {\n  updateProjectLabels(id: $id, labels: $labels) {\n    id\n    labels { id name }\n  }\n}"
+    ],
+    "json_vars": [
+      "{\n  \"id\": \"proj_123\",\n  \"labels\": [\"label_001\", \"label_002\"]\n}"
+    ]
+  },
+  {
+    "num": "8",
+    "name": "update_project_battle_label",
+    "desc": "更新项目战役标签",
+    "graphql": [
+      "mutation UpdateProjectBattleLabel($id: ID!, $battle_label_ids: [String!]!) {\n  update_project_battle_label(id: $id, battle_label_ids: $battle_label_ids)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"id\": \"proj_123\",\n  \"battle_label_ids\": [\"battle_001\"]\n}"
+    ]
+  },
+  {
+    "num": "9",
+    "name": "transferProjectClaim",
+    "desc": "转移项目负责人",
+    "graphql": [
+      "mutation TransferProjectClaim($id: ID!, $now: ID!) {\n  transferProjectClaim(id: $id, now: $now)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"id\": \"proj_123\",\n  \"now\": \"user_456\"\n}"
+    ]
+  },
+  {
+    "num": "10",
+    "name": "updateProjectMember",
+    "desc": "更新项目团队成员",
+    "graphql": [
+      "mutation UpdateProjectMember($id: ID!, $member_ids: [ID!]) {\n  updateProjectMember(id: $id, member_ids: $member_ids)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"id\": \"proj_123\",\n  \"member_ids\": [\"user_002\", \"user_003\"]\n}"
+    ]
+  },
+  {
+    "num": "11",
+    "name": "updateProjectPerformanceDistribution",
+    "desc": "更新项目业绩分配",
+    "graphql": [
+      "mutation UpdateProjectPerformanceDistribution($id: ID!, $input: [InputUserPerformancePercent!]!) {\n  updateProjectPerformanceDistribution(id: $id, input: $input)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"id\": \"proj_123\",\n  \"input\": [\n    { \"user_id\": \"user_001\", \"percent\": 60 },\n    { \"user_id\": \"user_002\", \"percent\": 40 }\n  ]\n}"
+    ]
+  },
+  {
+    "num": "12",
+    "name": "removeProject",
+    "desc": "删除项目",
+    "graphql": [
+      "mutation RemoveProject($id: ID!) {\n  removeProject(id: $id)\n}"
+    ],
+    "json_vars": [
+      "{ \"id\": \"proj_123\" }"
+    ]
+  },
+  {
+    "num": "13",
+    "name": "projectCostInfo",
+    "desc": "项目成本信息查询",
+    "graphql": [
+      "query ProjectCostInfo($id: ID!) {\n  projectCostInfo(id: $id) {\n    id\n    product_cost\n    service_cost\n    third_cost\n    other_cost\n    gross_margin\n    gross_margin_rate\n    created_at\n    updated_at\n  }\n}"
+    ],
+    "json_vars": [
+      "{ \"id\": \"proj_123\" }"
+    ]
+  },
+  {
+    "num": "14",
+    "name": "update_project_cost_detail",
+    "desc": "更新项目成本信息",
+    "graphql": [
+      "mutation UpdateProjectCostDetail($project_id: ID!, $details: [InputProjectProductCostDetail!]!) {\n  update_project_cost_detail(project_id: $project_id, details: $details)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"project_id\": \"proj_123\",\n  \"details\": [\n    { \"product_id\": \"prod_001\", \"form_id\": \"form_001\", \"cost\": 50000 }\n  ]\n}"
+    ]
+  },
+  {
+    "num": "15",
+    "name": "update_project_detail_coefficient",
+    "desc": "更新项目明细系数",
+    "graphql": [
+      "mutation UpdateProjectDetailCoefficient(\n  $project_id: ID!\n  $payment_coefficient: Float!\n  $other_coefficient: Float!\n  $coefficient_desc: String!\n) {\n  update_project_detail_coefficient(\n    project_id: $project_id\n    payment_coefficient: $payment_coefficient\n    other_coefficient: $other_coefficient\n    coefficient_desc: $coefficient_desc\n  )\n}"
+    ],
+    "json_vars": [
+      "{\n  \"project_id\": \"proj_123\",\n  \"payment_coefficient\": 1.0,\n  \"other_coefficient\": 1.0,\n  \"coefficient_desc\": \"标准系数\"\n}"
+    ]
+  },
+  {
+    "num": "16",
+    "name": "create_project_detail_change_apply",
+    "desc": "创建项目明细变更申请",
+    "graphql": [
+      "mutation CreateProjectDetailChangeApply($input: InputProjectDetailChangeApply!) {\n  create_project_detail_change_apply(input: $input)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"input\": {\n    \"project_id\": \"proj_123\",\n    \"change_scene\": [\"product_change\"],\n    \"scene_info\": \"更换产品型号\",\n    \"change_reason\": [\"customer_requirement_change\"],\n    \"change_reason_info\": \"客户需求变更\",\n    \"assessment_increment\": 0,\n    \"assessment_reason\": \"\"\n  }\n}"
+    ]
+  },
+  {
+    "num": "17",
+    "name": "approve_project_detail_change_apply",
+    "desc": "审批项目明细变更申请",
+    "graphql": [
+      "mutation ApproveProjectDetailChangeApply($apply_id: String!, $result: Boolean!, $note: String!) {\n  approve_project_detail_change_apply(apply_id: $apply_id, result: $result, note: $note)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"apply_id\": \"apply_456\",\n  \"result\": true,\n  \"note\": \"同意变更\"\n}"
+    ]
+  },
+  {
+    "num": "18",
+    "name": "update_project_element",
+    "desc": "更新项目要素",
+    "graphql": [
+      "mutation UpdateProjectElement(\n  $project_id: String!\n  $input_project_element: [InputProjectElement!]!\n  $input_project_direction: [InputProjectDirection!]!\n  $calc_project_promise: Boolean!\n) {\n  update_project_element(\n    project_id: $project_id\n    input_project_element: $input_project_element\n    input_project_direction: $input_project_direction\n    calc_project_promise: $calc_project_promise\n  )\n}"
+    ],
+    "json_vars": [
+      "{\n  \"project_id\": \"proj_123\",\n  \"input_project_element\": [],\n  \"input_project_direction\": [],\n  \"calc_project_promise\": false\n}"
+    ]
+  },
+  {
+    "num": "19",
+    "name": "list_project_delivery_stock",
+    "desc": "查询项目已交付设备",
+    "graphql": [
+      "query ListProjectDeliveryStock($project_id: String!) {\n  list_project_delivery_stock(project_id: $project_id) {\n    id\n    serial\n    product_type\n    product_model\n    in_stock_time\n    last_out_stock_time\n    saler { name }\n    tech_support { name }\n  }\n}"
+    ],
+    "json_vars": [
+      "{ \"project_id\": \"proj_123\" }"
+    ]
+  },
+  {
+    "num": "20",
+    "name": "create_product_delivery",
+    "desc": "创建产品交付",
+    "graphql": [
+      "mutation CreateProductDelivery(\n  $project_id: String!\n  $assigner: String!\n  $product_list: [InputProductWithForm!]!\n  $license_validity: String!\n  $after_sale_validity: String!\n  $implement_note: String\n  $is_early_note: String\n  $estimate_deal_time: Time\n  $delivery_note: String\n  $project_check: String\n  $project_other_note: String!\n  $attachments: [String!]\n) {\n  create_product_delivery(\n    project_id: $project_id\n    assigner: $assigner\n    product_list: $product_list\n    license_validity: $license_validity\n    after_sale_validity: $after_sale_validity\n    implement_note: $implement_note\n    is_early_note: $is_early_note\n    estimate_deal_time: $estimate_deal_time\n    delivery_note: $delivery_note\n    project_check: $project_check\n    project_other_note: $project_other_note\n    attachments: $attachments\n  )\n}"
+    ],
+    "json_vars": [
+      "{\n  \"project_id\": \"proj_123\",\n  \"assigner\": \"user_delivery_001\",\n  \"product_list\": [{ \"product_id\": \"prod_001\", \"form_id\": \"form_001\" }],\n  \"license_validity\": \"1年\",\n  \"after_sale_validity\": \"3年\",\n  \"implement_note\": null,\n  \"is_early_note\": null,\n  \"estimate_deal_time\": null,\n  \"delivery_note\": \"标准交付\",\n  \"project_check\": \"已通过\",\n  \"project_other_note\": \"无\",\n  \"attachments\": []\n}"
+    ]
+  },
+  {
+    "num": "21",
+    "name": "review_product_delivery",
+    "desc": "审批产品交付",
+    "graphql": [
+      "mutation ReviewProductDelivery($id: String!, $status: Boolean!, $reason: String!, $sign_stage: DeliverySignStage) {\n  review_product_delivery(id: $id, status: $status, reason: $reason, sign_stage: $sign_stage)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"id\": \"delivery_456\",\n  \"status\": true,\n  \"reason\": \"审批通过\",\n  \"sign_stage\": \"contractAwardedProject\"\n}"
+    ]
+  },
+  {
+    "num": "22",
+    "name": "update_product_delivery_time_info",
+    "desc": "更新产品预计交付/验收时间",
+    "graphql": [
+      "mutation UpdateProductDeliveryTimeInfo($info: InputProductDeliveryTimeInfo!) {\n  update_product_delivery_time_info(info: $info)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"info\": {\n    \"project_id\": \"proj_123\",\n    \"product_id\": \"prod_001\",\n    \"form_id\": \"form_001\",\n    \"estimate_delivery_time\": \"2026-06-01T00:00:00+08:00\",\n    \"estimate_acceptance_time\": \"2026-06-15T00:00:00+08:00\"\n  }\n}"
+    ]
+  },
+  {
+    "num": "23",
+    "name": "designation_product_delivery_person_in_charge",
+    "desc": "指定产品交付负责人",
+    "graphql": [
+      "mutation DesignationProductDeliveryPersonInCharge($id: String!, $person_in_charge: String!) {\n  designation_product_delivery_person_in_charge(id: $id, person_in_charge: $person_in_charge)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"id\": \"delivery_456\",\n  \"person_in_charge\": \"user_789\"\n}"
+    ]
+  },
+  {
+    "num": "24",
+    "name": "create_product_after_sale",
+    "desc": "创建产品售后",
+    "graphql": [
+      "mutation CreateProductAfterSale($input: InputProductAfterSale!) {\n  create_product_after_sale(input: $input)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"input\": {\n    \"project_id\": \"proj_123\",\n    \"product_id\": \"prod_001\",\n    \"form_id\": \"form_001\",\n    \"type\": \"repair\",\n    \"reason\": \"硬件故障\",\n    \"note\": \"需要更换主板\"\n  }\n}"
+    ]
+  },
+  {
+    "num": "25",
+    "name": "init_service_delivery",
+    "desc": "发起安服交付",
+    "graphql": [
+      "mutation InitServiceDelivery($delivery_id: ID!, $reason: String, $file: [ID!], $estimate_deal_time: Time) {\n  init_service_delivery(delivery_id: $delivery_id, reason: $reason, file: $file, estimate_deal_time: $estimate_deal_time)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"delivery_id\": \"delivery_789\",\n  \"reason\": \"客户要求启动安服交付\",\n  \"file\": [],\n  \"estimate_deal_time\": \"2026-07-01T00:00:00+08:00\"\n}"
+    ]
+  },
+  {
+    "num": "26",
+    "name": "review_service_delivery",
+    "desc": "审批安服交付",
+    "graphql": [
+      "mutation ReviewServiceDelivery($delivery_id: ID!, $status: Boolean!, $reason: String!, $sign_stage: DeliverySignStage) {\n  review_service_delivery(delivery_id: $delivery_id, status: $status, reason: $reason, sign_stage: $sign_stage)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"delivery_id\": \"delivery_789\",\n  \"status\": true,\n  \"reason\": \"审批通过\",\n  \"sign_stage\": \"contractAwardedProject\"\n}"
+    ]
+  },
+  {
+    "num": "27",
+    "name": "finish_service_delivery",
+    "desc": "结束安服交付",
+    "graphql": [
+      "mutation FinishServiceDelivery($delivery_id: ID!) {\n  finish_service_delivery(delivery_id: $delivery_id)\n}"
+    ],
+    "json_vars": [
+      "{ \"delivery_id\": \"delivery_789\" }"
+    ]
+  },
+  {
+    "num": "28",
+    "name": "finish_early_service_delivery",
+    "desc": "终止提前实施",
+    "graphql": [
+      "mutation FinishEarlyServiceDelivery($delivery_id: ID!, $reason: String!) {\n  finish_early_service_delivery(delivery_id: $delivery_id, reason: $reason)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"delivery_id\": \"delivery_789\",\n  \"reason\": \"客户要求延期\"\n}"
+    ]
+  },
+  {
+    "num": "29",
+    "name": "punish_service_delivery",
+    "desc": "安服交付惩罚",
+    "graphql": [
+      "mutation PunishServiceDelivery(\n  $delivery_id: ID!\n  $is_punish: Boolean!\n  $reason: String!\n  $amount: String!\n  $attachments: [ID!]!\n) {\n  punish_service_delivery(\n    delivery_id: $delivery_id\n    is_punish: $is_punish\n    reason: $reason\n    amount: $amount\n    attachments: $attachments\n  )\n}"
+    ],
+    "json_vars": [
+      "{\n  \"delivery_id\": \"delivery_789\",\n  \"is_punish\": true,\n  \"reason\": \"逾期交付\",\n  \"amount\": \"5000\",\n  \"attachments\": []\n}"
+    ]
+  },
+  {
+    "num": "30",
+    "name": "listCompany",
+    "desc": "客户列表查询",
+    "graphql": [
+      "query ListCompany($search: [CompanySearchParam!], $pagination: PaginationParam) {\n  listCompany(search: $search, pagination: $pagination) {\n    total\n    skip\n    limit\n    data {\n      id\n      name\n      common_name\n      rank\n      industry { id name }\n      region { id name }\n      claim_by { id name }\n      claim_by_group { id name }\n      valid\n      lock\n      created_at\n      updated_at\n    }\n  }\n}"
+    ],
+    "json_vars": [
+      "{\n  \"search\": [\n    {\n      \"name\": [\"科技\"],\n      \"rank\": [\"A\", \"KA\"],\n      \"valid\": true,\n      \"region\": [\"reg_beijing\"]\n    }\n  ],\n  \"pagination\": { \"skip\": 0, \"limit\": 20 }\n}"
+    ]
+  },
+  {
+    "num": "31",
+    "name": "companyInfo",
+    "desc": "客户详情查询",
+    "graphql": [
+      "query CompanyInfo($id: ID!) {\n  companyInfo(id: $id) {\n    id\n    name\n    common_name\n    zip_code\n    rank\n    industry { id name }\n    region { id name }\n    country { id name }\n    claim_by { id name }\n    claim_by_group { id name }\n    contacts { id name position phone email }\n    projects { id name stage deal_amount }\n    valid\n    lock\n    created_at\n    updated_at\n  }\n}"
+    ],
+    "json_vars": [
+      "{ \"id\": \"comp_456\" }"
+    ]
+  },
+  {
+    "num": "32",
+    "name": "find_company_or_high_seas_company_by_id",
+    "desc": "查询客户或公海客户",
+    "graphql": [
+      "query FindCompanyOrHighSeasCompanyById($id: ID!) {\n  find_company_or_high_seas_company_by_id(id: $id) {\n    id\n    name\n    common_name\n    rank\n    claim_by { id name }\n    valid\n    lock\n    enter_high_seas_at\n  }\n}"
+    ],
+    "json_vars": [
+      "{ \"id\": \"comp_456\" }"
+    ]
+  },
+  {
+    "num": "33",
+    "name": "createCompanyApplyByCreate",
+    "desc": "创建客户申请",
+    "graphql": [
+      "mutation CreateCompanyApplyByCreate(\n  $input: InputCompany!\n  $contact_name: String!\n  $contact_position: String!\n  $contact_phone: String!\n  $note: String!\n  $budget: InputCompanyBudget\n) {\n  createCompanyApplyByCreate(\n    input: $input\n    contact_name: $contact_name\n    contact_position: $contact_position\n    contact_phone: $contact_phone\n    note: $note\n    budget: $budget\n  ) {\n    id\n    status\n    created_at\n  }\n}"
+    ],
+    "json_vars": [
+      "{\n  \"input\": {\n    \"credit_code\": \"91110000123456789X\",\n    \"name\": \"北京XX科技有限公司\",\n    \"common_name\": \"XX科技\",\n    \"country\": \"CN\",\n    \"industry\": \"ind_tech\",\n    \"region\": \"reg_beijing\",\n    \"zip_code\": \"100000\",\n    \"phone\": \"010-12345678\",\n    \"claim_by\": \"user_001\",\n    \"claim_by_group\": \"group_sales_north\",\n    \"parent\": \"\",\n    \"info\": \"专注于金融科技领域的安全解决方案提供商\",\n    \"rank\": \"A\",\n    \"attachments\": [],\n    \"leads_id\": null\n  },\n  \"contact_name\": \"张三\",\n  \"contact_position\": \"信息安全总监\",\n  \"contact_phone\": \"13800138000\",\n  \"note\": \"通过行业展会接触，有明确的安全产品采购需求\",\n  \"budget\": {\n    \"amount\": 500000,\n    \"currency\": \"CNY\"\n  }\n}"
+    ]
+  },
+  {
+    "num": "34",
+    "name": "reviewCompanyApply",
+    "desc": "审核客户申请",
+    "graphql": [
+      "mutation ReviewCompanyApply($apply_id: ID!, $status: Boolean!, $result: String!) {\n  reviewCompanyApply(apply_id: $apply_id, status: $status, result: $result)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"apply_id\": \"apply_789\",\n  \"status\": true,\n  \"result\": \"信息完整，同意创建\"\n}"
+    ]
+  },
+  {
+    "num": "35",
+    "name": "transferCompanyClaim",
+    "desc": "转移客户负责人",
+    "graphql": [
+      "mutation TransferCompanyClaim($id: ID!, $claim_by: ID!) {\n  transferCompanyClaim(id: $id, claim_by: $claim_by)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"id\": \"comp_456\",\n  \"claim_by\": \"user_789\"\n}"
+    ]
+  },
+  {
+    "num": "36",
+    "name": "update_company_valid",
+    "desc": "修改客户有效性",
+    "graphql": [
+      "mutation UpdateCompanyValid($company_id: String!, $valid: Boolean!, $reason: String) {\n  update_company_valid(company_id: $company_id, valid: $valid, reason: $reason)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"company_id\": \"comp_456\",\n  \"valid\": false,\n  \"reason\": \"客户已倒闭\"\n}"
+    ]
+  },
+  {
+    "num": "37",
+    "name": "update_company_lock",
+    "desc": "修改客户锁定状态",
+    "graphql": [
+      "mutation UpdateCompanyLock($company_id: String!, $lock: Boolean!) {\n  update_company_lock(company_id: $company_id, lock: $lock)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"company_id\": \"comp_456\",\n  \"lock\": true\n}"
+    ]
+  },
+  {
+    "num": "38",
+    "name": "claim_company",
+    "desc": "认领客户",
+    "graphql": [
+      "mutation ClaimCompany($company_id: String!) {\n  claim_company(company_id: $company_id)\n}"
+    ],
+    "json_vars": [
+      "{ \"company_id\": \"comp_456\" }"
+    ]
+  },
+  {
+    "num": "39",
+    "name": "distribute_company",
+    "desc": "分配客户",
+    "graphql": [
+      "mutation DistributeCompany($company_id: String!, $claim_id: String!) {\n  distribute_company(company_id: $company_id, claim_id: $claim_id)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"company_id\": \"comp_456\",\n  \"claim_id\": \"user_789\"\n}"
+    ]
+  },
+  {
+    "num": "40",
+    "name": "batch_distribute_company",
+    "desc": "批量分配客户",
+    "graphql": [
+      "mutation BatchDistributeCompany($company_ids: [String!]!, $claim_id: String!) {\n  batch_distribute_company(company_ids: $company_ids, claim_id: $claim_id)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"company_ids\": [\"comp_001\", \"comp_002\"],\n  \"claim_id\": \"user_789\"\n}"
+    ]
+  },
+  {
+    "num": "41",
+    "name": "updateCompanyLabels",
+    "desc": "修改客户标签",
+    "graphql": [
+      "mutation UpdateCompanyLabels($company_id: ID!, $labels: [String!]!) {\n  updateCompanyLabels(company_id: $company_id, labels: $labels)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"company_id\": \"comp_456\",\n  \"labels\": [\"label_001\", \"label_002\"]\n}"
+    ]
+  },
+  {
+    "num": "42",
+    "name": "removeCompany",
+    "desc": "删除客户",
+    "graphql": [
+      "mutation RemoveCompany($id: ID!) {\n  removeCompany(id: $id)\n}"
+    ],
+    "json_vars": [
+      "{ \"id\": \"comp_456\" }"
+    ]
+  },
+  {
+    "num": "43",
+    "name": "listChannel",
+    "desc": "伙伴列表查询",
+    "graphql": [
+      "query ListChannel($search: ChannelSearchParam!, $pagination: PaginationParam, $with_perm: Boolean!) {\n  listChannel(search: $search, pagination: $pagination, with_perm: $with_perm) {\n    total\n    skip\n    limit\n    data {\n      id\n      name\n      common_name\n      type\n      status\n      grade\n      region { id name }\n      sale_claim_by { id name }\n      valid\n      created_at\n    }\n  }\n}"
+    ],
+    "json_vars": [
+      "{\n  \"search\": {\n    \"name\": [\"长亭\"],\n    \"channel_status\": [\"certified\"],\n    \"grade\": [\"v1\", \"v2\"]\n  },\n  \"pagination\": { \"skip\": 0, \"limit\": 20 },\n  \"with_perm\": false\n}"
+    ]
+  },
+  {
+    "num": "44",
+    "name": "channel",
+    "desc": "伙伴详情查询",
+    "graphql": [
+      "query Channel($id: ID!) {\n  channel(id: $id) {\n    id\n    name\n    common_name\n    type\n    status\n    grade\n    region { id name }\n    sale_claim_by { id name }\n    channel_sale_claim_by { id name }\n    cooperate_contact { id name phone }\n    sign_info_list { id sign_expire_date }\n    valid\n    created_at\n  }\n}"
+    ],
+    "json_vars": [
+      "{ \"id\": \"chan_123\" }"
+    ]
+  },
+  {
+    "num": "45",
+    "name": "createChannelApply",
+    "desc": "创建伙伴审核",
+    "graphql": [
+      "mutation CreateChannelApply(\n  $input_channel: InputChannel!\n  $cooperate_contact: [InputChannelContact!]\n  $department_contact: [InputChannelContact!]\n  $other_contact: [InputChannelContact!]\n) {\n  createChannelApply(\n    input_channel: $input_channel\n    cooperate_contact: $cooperate_contact\n    department_contact: $department_contact\n    other_contact: $other_contact\n  ) {\n    id\n    stage\n    created_at\n  }\n}"
+    ],
+    "json_vars": [
+      "{\n  \"input_channel\": {\n    \"credit_code\": \"91110000123456789X\",\n    \"name\": \"XX安全科技\",\n    \"common_name\": \"XX安全\",\n    \"type\": [\"solution\"],\n    \"industry_list\": [\"ind_tech\"],\n    \"country\": \"CN\",\n    \"region\": \"reg_beijing\",\n    \"address\": \"北京市海淀区\",\n    \"status\": \"normal\",\n    \"sale_claim_by\": \"user_001\",\n    \"channel_sale_claim_by\": \"user_002\",\n    \"info\": \"安全解决方案伙伴\",\n    \"grade\": \"v1\",\n    \"partner_type\": [\" reseller\"],\n    \"primary_industry\": [\"ind_tech\"],\n    \"primary_area\": [\"reg_beijing\"]\n  },\n  \"cooperate_contact\": [\n    { \"type\": \"master\", \"name\": \"王五\", \"position\": \"总监\", \"area_code\": \"+86\", \"phone\": \"13800138000\", \"email\": \"wangwu@example.com\" }\n  ],\n  \"department_contact\": [],\n  \"other_contact\": []\n}"
+    ]
+  },
+  {
+    "num": "46",
+    "name": "reviewChannelApply",
+    "desc": "审批伙伴审核",
+    "graphql": [
+      "mutation ReviewChannelApply($id: ID!, $status: Boolean!, $result: String!) {\n  reviewChannelApply(id: $id, status: $status, result: $result)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"id\": \"apply_789\",\n  \"status\": true,\n  \"result\": \"资质符合要求，同意入驻\"\n}"
+    ]
+  },
+  {
+    "num": "47",
+    "name": "updateChannel",
+    "desc": "更新伙伴基本信息",
+    "graphql": [
+      "mutation UpdateChannel($id: ID!, $input_channel: InputChannel!) {\n  updateChannel(id: $id, input_channel: $input_channel)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"id\": \"chan_123\",\n  \"input_channel\": {\n    \"credit_code\": \"91110000123456789X\",\n    \"name\": \"XX安全科技（更新）\",\n    \"common_name\": \"XX安全\",\n    \"type\": [\"solution\"],\n    \"industry_list\": [\"ind_tech\"],\n    \"country\": \"CN\",\n    \"region\": \"reg_beijing\",\n    \"address\": \"北京市朝阳区\",\n    \"status\": \"certified\",\n    \"sale_claim_by\": \"user_001\",\n    \"channel_sale_claim_by\": \"user_002\",\n    \"info\": \"更新后的伙伴信息\",\n    \"grade\": \"v2\",\n    \"partner_type\": [\"reseller\"],\n    \"primary_industry\": [\"ind_tech\"],\n    \"primary_area\": [\"reg_beijing\"]\n  }\n}"
+    ]
+  },
+  {
+    "num": "48",
+    "name": "transferChannelClaim",
+    "desc": "转移伙伴销售负责人",
+    "graphql": [
+      "mutation TransferChannelClaim($id: ID!, $claim_by: ID!) {\n  transferChannelClaim(id: $id, claim_by: $claim_by)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"id\": \"chan_123\",\n  \"claim_by\": \"user_789\"\n}"
+    ]
+  },
+  {
+    "num": "49",
+    "name": "batchTransferChannelClaim",
+    "desc": "批量转移伙伴销售负责人",
+    "graphql": [
+      "mutation BatchTransferChannelClaim($id_list: [ID!]!, $claim_by: ID!) {\n  batchTransferChannelClaim(id_list: $id_list, claim_by: $claim_by)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"id_list\": [\"chan_001\", \"chan_002\"],\n  \"claim_by\": \"user_789\"\n}"
+    ]
+  },
+  {
+    "num": "50",
+    "name": "update_channel_cooperate_status",
+    "desc": "更新伙伴合作状态",
+    "graphql": [
+      "mutation UpdateChannelCooperateStatus($id: ID!, $status: ChannelCooperateStatus!) {\n  update_channel_cooperate_status(id: $id, status: $status)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"id\": \"chan_123\",\n  \"status\": \"over\"\n}"
+    ]
+  },
+  {
+    "num": "51",
+    "name": "listContract",
+    "desc": "合同列表查询",
+    "graphql": [
+      "query ListContract($search: [ContractSearchParam!], $pagination: PaginationParam) {\n  listContract(search: $search, pagination: $pagination) {\n    total\n    skip\n    limit\n    data {\n      id\n      name\n      amount\n      currency\n      signDate\n      stampDate\n      company { name value }\n      peerLegal { name }\n      payOrPaid { name value }\n      file_type\n      contractState { name value }\n      personInCharge { name }\n      createdAt\n    }\n  }\n}"
+    ],
+    "json_vars": [
+      "{\n  \"search\": [\n    {\n      \"name\": [\"采购\"],\n      \"file_type\": \"contract\",\n      \"sign_date\": { \"from\": \"2026-01-01T00:00:00+08:00\", \"to\": \"2026-12-31T23:59:59+08:00\" }\n    }\n  ],\n  \"pagination\": { \"skip\": 0, \"limit\": 20 }\n}"
+    ]
+  },
+  {
+    "num": "52",
+    "name": "contract",
+    "desc": "合同详情查询",
+    "graphql": [
+      "query Contract($id: String!) {\n  contract(id: $id) {\n    id\n    name\n    company { name value }\n    project { id name }\n    peerLegal { name tax_number }\n    amount\n    currency\n    payOrPaid { name value }\n    file_type\n    signDate\n    stampDate\n    dueDate\n    personInCharge { name }\n    contractState { name value }\n    file { id filename }\n    createdAt\n  }\n}"
+    ],
+    "json_vars": [
+      "{ \"id\": \"contract_123\" }"
+    ]
+  },
+  {
+    "num": "53",
+    "name": "createContract",
+    "desc": "创建合同",
+    "graphql": [
+      "mutation CreateContract($contract: InputContract!) {\n  createContract(contract: $contract) {\n    id\n    name\n    amount\n    createdAt\n  }\n}"
+    ],
+    "json_vars": [
+      "{\n  \"contract\": {\n    \"name\": \"XX银行安全防护产品采购合同\",\n    \"company\": \"chaitin\",\n    \"project\": \"proj_123\",\n    \"peerLegal\": \"comp_456\",\n    \"currency\": \"CNY\",\n    \"amount\": \"300000\",\n    \"payOrPaid\": \"get_paid\",\n    \"file_type\": \"contract\",\n    \"signDate\": \"2026-07-15T00:00:00+08:00\",\n    \"stampDate\": \"2026-07-20T00:00:00+08:00\",\n    \"dueDate\": \"2027-07-14\"\n  }\n}"
+    ]
+  },
+  {
+    "num": "54",
+    "name": "updateContract",
+    "desc": "更新合同",
+    "graphql": [
+      "mutation UpdateContract($id: ID!, $contract: InputContract!) {\n  updateContract(id: $id, contract: $contract)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"id\": \"contract_123\",\n  \"contract\": {\n    \"name\": \"XX银行安全防护产品采购合同（修订）\",\n    \"company\": \"chaitin\",\n    \"project\": \"proj_123\",\n    \"peerLegal\": \"comp_456\",\n    \"currency\": \"CNY\",\n    \"amount\": \"350000\",\n    \"payOrPaid\": \"get_paid\",\n    \"file_type\": \"contract\",\n    \"signDate\": \"2026-07-15T00:00:00+08:00\",\n    \"stampDate\": \"2026-07-20T00:00:00+08:00\",\n    \"dueDate\": \"2027-07-14\"\n  }\n}"
+    ]
+  },
+  {
+    "num": "55",
+    "name": "frame_contract_info",
+    "desc": "框架合同信息查询",
+    "graphql": [
+      "query FrameContractInfo($project_id: String!) {\n  frame_contract_info(project_id: $project_id) {\n    id\n    start_type\n    start_at\n    days\n    end_at\n    auto_compute\n    auto_renew\n    multi_body\n    body_list { id name }\n    order\n    set_template\n    template_list { id filename }\n    set_top_amount\n    top_amount\n    signed_amount\n    note\n    created_at\n  }\n}"
+    ],
+    "json_vars": [
+      "{ \"project_id\": \"proj_framework_001\" }"
+    ]
+  },
+  {
+    "num": "56",
+    "name": "update_frame_contract_info",
+    "desc": "更新框架合同信息",
+    "graphql": [
+      "mutation UpdateFrameContractInfo($input: InputFrameContractInfo!) {\n  update_frame_contract_info(input: $input)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"input\": {\n    \"project_id\": \"proj_framework_001\",\n    \"start_type\": \"contract_effective\",\n    \"start_at\": \"2026-01-01T00:00:00+08:00\",\n    \"days\": 365,\n    \"end_at\": \"2026-12-31T23:59:59+08:00\",\n    \"auto_compute\": true,\n    \"auto_renew\": false,\n    \"multi_body\": false,\n    \"body_ids\": [],\n    \"body_info\": \"\",\n    \"order\": \"order_service\",\n    \"order_info\": \"\",\n    \"set_template\": false,\n    \"template_file_ids\": [],\n    \"no_template_info\": \"\",\n    \"set_top_amount\": false,\n    \"top_amount\": \"0\",\n    \"note\": \"\"\n  }\n}"
+    ]
+  },
+  {
+    "num": "57",
+    "name": "listRevenue",
+    "desc": "回款列表查询",
+    "graphql": [
+      "query ListRevenue($search: RevenueSearchParam!, $pagination: PaginationParam) {\n  listRevenue(search: $search, pagination: $pagination) {\n    total\n    skip\n    limit\n    data {\n      id\n      amount\n      state\n      project { id name }\n      created_at\n      creator { name }\n    }\n  }\n}"
+    ],
+    "json_vars": [
+      "{\n  \"search\": {\n    \"project_id\": [\"proj_123\"],\n    \"state\": [\"matched\"],\n    \"created_at\": { \"from\": \"2026-01-01T00:00:00+08:00\", \"to\": \"2026-12-31T23:59:59+08:00\" }\n  },\n  \"pagination\": { \"skip\": 0, \"limit\": 20 }\n}"
+    ]
+  },
+  {
+    "num": "58",
+    "name": "updatePaymentPlan",
+    "desc": "修改回款计划",
+    "graphql": [
+      "mutation UpdatePaymentPlan($project_id: ID!, $payment_id: ID!, $due_at: Time, $money: String) {\n  updatePaymentPlan(project_id: $project_id, payment_id: $payment_id, due_at: $due_at, money: $money) {\n    id\n    due_at\n    money\n  }\n}"
+    ],
+    "json_vars": [
+      "{\n  \"project_id\": \"proj_123\",\n  \"payment_id\": \"pay_456\",\n  \"due_at\": \"2026-08-01T00:00:00+08:00\",\n  \"money\": \"150000\"\n}"
+    ]
+  },
+  {
+    "num": "59",
+    "name": "addPaymentPlan",
+    "desc": "新增回款计划",
+    "graphql": [
+      "mutation AddPaymentPlan($project_id: ID!, $due_at: Time!, $money: String!) {\n  addPaymentPlan(project_id: $project_id, due_at: $due_at, money: $money) {\n    id\n    due_at\n    money\n  }\n}"
+    ],
+    "json_vars": [
+      "{\n  \"project_id\": \"proj_123\",\n  \"due_at\": \"2026-09-01T00:00:00+08:00\",\n  \"money\": \"150000\"\n}"
+    ]
+  },
+  {
+    "num": "60",
+    "name": "removePaymentPlan",
+    "desc": "删除回款计划",
+    "graphql": [
+      "mutation RemovePaymentPlan($project_id: ID!, $payment_id: ID!) {\n  removePaymentPlan(project_id: $project_id, payment_id: $payment_id)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"project_id\": \"proj_123\",\n  \"payment_id\": \"pay_456\"\n}"
+    ]
+  },
+  {
+    "num": "61",
+    "name": "revenueAssociation",
+    "desc": "回款匹配项目",
+    "graphql": [
+      "mutation RevenueAssociation($rev_id: ID!, $project_id: ID!, $income_plan_id: ID) {\n  revenueAssociation(rev_id: $rev_id, project_id: $project_id, income_plan_id: $income_plan_id)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"rev_id\": \"rev_789\",\n  \"project_id\": \"proj_123\",\n  \"income_plan_id\": \"ip_001\"\n}"
+    ]
+  },
+  {
+    "num": "62",
+    "name": "revenueChangeState",
+    "desc": "修改回款状态",
+    "graphql": [
+      "mutation RevenueChangeState($rev_id: ID!, $state: RevenueState!) {\n  revenueChangeState(rev_id: $rev_id, state: $state)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"rev_id\": \"rev_789\",\n  \"state\": \"matched\"\n}"
+    ]
+  },
+  {
+    "num": "63",
+    "name": "revenue_split",
+    "desc": "拆分回款",
+    "graphql": [
+      "mutation RevenueSplit($rev_id: ID!, $split: Boolean!, $child_revenue_list: [InputSplitRevenue!]) {\n  revenue_split(rev_id: $rev_id, split: $split, child_revenue_list: $child_revenue_list)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"rev_id\": \"rev_789\",\n  \"split\": true,\n  \"child_revenue_list\": [\n    { \"money\": \"100000\", \"project_id\": \"proj_001\" },\n    { \"money\": \"50000\", \"project_id\": \"proj_002\" }\n  ]\n}"
+    ]
+  },
+  {
+    "num": "64",
+    "name": "listConfirmRevenue",
+    "desc": "确认收入列表查询",
+    "graphql": [
+      "query ListConfirmRevenue($search: ConfirmRevenueSearchParam!, $pagination: PaginationParam) {\n  listConfirmRevenue(search: $search, pagination: $pagination) {\n    total\n    skip\n    limit\n    data {\n      id\n      project { id name }\n      state\n      items { id product { product { name } } amount confirmed_state progress }\n      created_at\n    }\n  }\n}"
+    ],
+    "json_vars": [
+      "{\n  \"search\": {\n    \"claim_by\": [\"user_001\"],\n    \"confirmed_state\": [\"unconfirmed\"],\n    \"created_at\": { \"from\": \"2026-01-01T00:00:00+08:00\", \"to\": \"2026-12-31T23:59:59+08:00\" }\n  },\n  \"pagination\": { \"skip\": 0, \"limit\": 20 }\n}"
+    ]
+  },
+  {
+    "num": "65",
+    "name": "confirmRevenueStatistics",
+    "desc": "确认收入统计查询",
+    "graphql": [
+      "query ConfirmRevenueStatistics($search: ConfirmRevenueStatisticSearchParam!) {\n  confirmRevenueStatistics(search: $search) {\n    statistics {\n      domain\n      currency\n      actual_amount\n      all_actual_amount\n      performance_amount\n      project_count\n    }\n    company_num\n    project_num\n  }\n}"
+    ],
+    "json_vars": [
+      "{\n  \"search\": {\n    \"claim_by\": [\"user_001\"],\n    \"project_deal_date\": { \"from\": \"2026-01-01T00:00:00+08:00\", \"to\": \"2026-12-31T23:59:59+08:00\" }\n  }\n}"
+    ]
+  },
+  {
+    "num": "66",
+    "name": "createConfirmRevenue",
+    "desc": "发起确认收入",
+    "graphql": [
+      "mutation CreateConfirmRevenue($project: ID!) {\n  createConfirmRevenue(project: $project)\n}"
+    ],
+    "json_vars": [
+      "{ \"project\": \"proj_123\" }"
+    ]
+  },
+  {
+    "num": "67",
+    "name": "updateConfirmRevenueForDeliver",
+    "desc": "交付确认收入",
+    "graphql": [
+      "mutation UpdateConfirmRevenueForDeliver($id: ID!, $dinput: [ConfirmRevenueInputForDeliverer!]!) {\n  updateConfirmRevenueForDeliver(id: $id, dinput: $dinput)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"id\": \"cr_789\",\n  \"dinput\": [\n    {\n      \"id\": \"item_001\",\n      \"product_price\": \"150000\",\n      \"currency\": \"CNY\",\n      \"attachment\": [],\n      \"attachment_type\": \"seal\",\n      \"customer_docker\": \"客户对接人张三\",\n      \"progress\": 100,\n      \"dnote\": \"已完成现场部署\",\n      \"acceptance_time\": \"2026-05-01T00:00:00+08:00\"\n    }\n  ]\n}"
+    ]
+  },
+  {
+    "num": "68",
+    "name": "updateConfirmRevenueForFanancial",
+    "desc": "财务确认收入",
+    "graphql": [
+      "mutation UpdateConfirmRevenueForFanancial(\n  $id: ID!\n  $finput: [ConfirmRevenueInputForFanatical!]!\n  $allfinished: Boolean\n) {\n  updateConfirmRevenueForFanancial(id: $id, finput: $finput, allfinished: $allfinished)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"id\": \"cr_789\",\n  \"finput\": [\n    {\n      \"id\": \"item_001\",\n      \"product_price\": \"150000\",\n      \"out_source_amount\": \"0\",\n      \"due_at\": \"2026-05-01T00:00:00+08:00\",\n      \"attachment\": [],\n      \"attachment_type\": \"seal\",\n      \"customer_docker\": \"张三\",\n      \"progress\": 100,\n      \"dnote\": \"已交付\",\n      \"confirmed_state\": \"confirmed\",\n      \"amount\": \"132743.36\",\n      \"tax\": \"17256.64\",\n      \"all_amount\": \"150000\",\n      \"all_tax\": \"19500\",\n      \"tax_rate\": 13,\n      \"currency\": \"CNY\",\n      \"fnote\": \"确认收入\",\n      \"confirmed_progress\": 100,\n      \"start_time\": \"2026-01-01T00:00:00+08:00\",\n      \"end_time\": \"2026-05-01T00:00:00+08:00\",\n      \"acceptance_time\": \"2026-05-01T00:00:00+08:00\"\n    }\n  ],\n  \"allfinished\": false\n}"
+    ]
+  },
+  {
+    "num": "69",
+    "name": "removeConfirmRevenue",
+    "desc": "删除确认收入",
+    "graphql": [
+      "mutation RemoveConfirmRevenue($id: ID!) {\n  removeConfirmRevenue(id: $id)\n}"
+    ],
+    "json_vars": [
+      "{ \"id\": \"cr_789\" }"
+    ]
+  },
+  {
+    "num": "70",
+    "name": "list_leads",
+    "desc": "线索列表查询",
+    "graphql": [
+      "query ListLeads($search: LeadsSearchParam, $pagination: PaginationParam, $sort_by: SortBy) {\n  list_leads(search: $search, pagination: $pagination, sort_by: $sort_by) {\n    total\n    skip\n    limit\n    data {\n      id\n      type\n      source\n      client_name\n      client_contact_name\n      client_contact_phone\n      valid\n      convert\n      region { id name }\n      claim_by { id name }\n      created_at\n    }\n  }\n}"
+    ],
+    "json_vars": [
+      "{\n  \"search\": {\n    \"list_type\": \"my\",\n    \"type\": [\"direct\"],\n    \"client_name\": \"银行\",\n    \"valid\": true,\n    \"convert\": false\n  },\n  \"pagination\": { \"skip\": 0, \"limit\": 20 },\n  \"sort_by\": { \"by\": \"created_at\", \"order\": -1 }\n}"
+    ]
+  },
+  {
+    "num": "71",
+    "name": "leads_info",
+    "desc": "线索详情查询",
+    "graphql": [
+      "query LeadsInfo($id: ID!) {\n  leads_info(id: $id) {\n    id\n    type\n    source\n    source_product\n    client_name\n    client_contact_name\n    client_contact_position\n    client_contact_phone\n    client_contact_email\n    valid\n    convert\n    region { id name }\n    claim_by { id name }\n    created_at\n  }\n}"
+    ],
+    "json_vars": [
+      "{ \"id\": \"leads_123\" }"
+    ]
+  },
+  {
+    "num": "72",
+    "name": "create_leads",
+    "desc": "创建线索",
+    "graphql": [
+      "mutation CreateLeads($param: LeadsParam!) {\n  create_leads(param: $param)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"param\": {\n    \"type\": \"direct\",\n    \"source\": \"官网咨询\",\n    \"source_product\": \"WAF\",\n    \"client_name\": \"ZZ电子商务有限公司\",\n    \"client_contact_name\": \"王五\",\n    \"client_contact_position\": \"运维经理\",\n    \"client_contact_phone\": \"13700137000\",\n    \"client_contact_email\": \"wangwu@example.com\",\n    \"client_contact_time\": \"2026-05-02T10:30:00+08:00\",\n    \"communication_intention\": \"了解Web应用防火墙产品功能和报价\",\n    \"note\": \"客户有明确的等保合规需求\",\n    \"region\": \"reg_shanghai\",\n    \"attachments\": []\n  }\n}"
+    ]
+  },
+  {
+    "num": "73",
+    "name": "update_leads",
+    "desc": "更新线索",
+    "graphql": [
+      "mutation UpdateLeads($id: ID!, $param: LeadsParam!) {\n  update_leads(id: $id, param: $param)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"id\": \"leads_123\",\n  \"param\": {\n    \"type\": \"direct\",\n    \"source\": \"展会\",\n    \"source_product\": \"Scanner\",\n    \"client_name\": \"ZZ电子商务有限公司（更新）\",\n    \"client_contact_name\": \"王五\",\n    \"client_contact_position\": \"安全经理\",\n    \"client_contact_phone\": \"13700137000\",\n    \"note\": \"已联系，安排产品演示\",\n    \"region\": \"reg_shanghai\",\n    \"attachments\": []\n  }\n}"
+    ]
+  },
+  {
+    "num": "74",
+    "name": "update_leads_valid",
+    "desc": "更新线索有效性",
+    "graphql": [
+      "mutation UpdateLeadsValid(\n  $id: ID!\n  $valid: Boolean!\n  $invalid_reason: String\n  $first_reason: LeadsInvalidFirstReason\n  $second_reason: LeadsInvalidSecondReason\n) {\n  update_leads_valid(id: $id, valid: $valid, invalid_reason: $invalid_reason, first_reason: $first_reason, second_reason: $second_reason)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"id\": \"leads_123\",\n  \"valid\": false,\n  \"invalid_reason\": \"客户无预算\",\n  \"first_reason\": \"no_budget\",\n  \"second_reason\": null\n}"
+    ]
+  },
+  {
+    "num": "75",
+    "name": "claim_leads",
+    "desc": "认领线索",
+    "graphql": [
+      "mutation ClaimLeads($leads_id: ID!) {\n  claim_leads(leads_id: $leads_id)\n}"
+    ],
+    "json_vars": [
+      "{ \"leads_id\": \"leads_123\" }"
+    ]
+  },
+  {
+    "num": "76",
+    "name": "create_project_by_leads",
+    "desc": "通过线索创建项目",
+    "graphql": [
+      "mutation CreateProjectByLeads($input: InputProject!) {\n  create_project_by_leads(input: $input)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"input\": {\n    \"name\": \"ZZ电商安全防护项目\",\n    \"company_id\": \"comp_new_001\",\n    \"type\": \"normal\",\n    \"level\": \"ordinary\",\n    \"deal_date\": \"2026-08-01T00:00:00+08:00\",\n    \"sign_date\": \"2026-09-01T00:00:00+08:00\",\n    \"stage\": \"leads\",\n    \"stage_info\": { \"info\": \"由线索转化\", \"attachments\": [], \"todos\": [] },\n    \"leads_convert_condition\": [],\n    \"project_promise\": \"delivery_standard\",\n    \"extra\": { \"source\": \"线索转化\" }\n  }\n}"
+    ]
+  },
+  {
+    "num": "77",
+    "name": "createProjectInfo",
+    "desc": "创建跟进记录",
+    "graphql": [
+      "mutation CreateProjectInfo(\n  $project_id: String\n  $company_id: String\n  $channel_id: String\n  $leads_id: String\n  $type: ProjectInfoType\n  $info: String!\n  $attachments: [String!]\n  $todos: [InputTodoList!]\n) {\n  createProjectInfo(\n    project_id: $project_id\n    company_id: $company_id\n    channel_id: $channel_id\n    leads_id: $leads_id\n    type: $type\n    info: $info\n    attachments: $attachments\n    todos: $todos\n  ) {\n    id\n    info\n    type\n    created_at\n  }\n}"
+    ],
+    "json_vars": [
+      "{\n  \"project_id\": \"proj_123\",\n  \"company_id\": null,\n  \"channel_id\": null,\n  \"leads_id\": null,\n  \"type\": \"project_follow_record\",\n  \"info\": \"今日与客户进行了产品演示，反馈良好，下周安排技术交流。\",\n  \"attachments\": [],\n  \"todos\": [\n    {\n      \"name\": \"准备技术交流PPT\",\n      \"deadline\": \"2026-05-10T18:00:00+08:00\",\n      \"processor\": [\"user_001\"]\n    }\n  ]\n}"
+    ]
+  },
+  {
+    "num": "78",
+    "name": "updateProjectInfo",
+    "desc": "更新跟进记录",
+    "graphql": [
+      "mutation UpdateProjectInfo($id: ID!, $info: String!, $attachments: [String!]) {\n  updateProjectInfo(id: $id, info: $info, attachments: $attachments)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"id\": \"pinfo_456\",\n  \"info\": \"今日与客户进行了产品演示，反馈非常积极，已确定下周三进行技术交流。\",\n  \"attachments\": []\n}"
+    ]
+  },
+  {
+    "num": "79",
+    "name": "deleteProjectInfo",
+    "desc": "删除跟进记录",
+    "graphql": [
+      "mutation DeleteProjectInfo($id: ID!) {\n  deleteProjectInfo(id: $id)\n}"
+    ],
+    "json_vars": [
+      "{ \"id\": \"pinfo_456\" }"
+    ]
+  },
+  {
+    "num": "80",
+    "name": "createComment",
+    "desc": "创建评论",
+    "graphql": [
+      "mutation CreateComment(\n  $related_type: CommentRelatedType!\n  $related_id: ID!\n  $content: String!\n  $attachments: [ID!]\n  $todos: [InputTodoList!]\n) {\n  createComment(\n    related_type: $related_type\n    related_id: $related_id\n    content: $content\n    attachments: $attachments\n    todos: $todos\n  )\n}"
+    ],
+    "json_vars": [
+      "{\n  \"related_type\": \"project\",\n  \"related_id\": \"proj_123\",\n  \"content\": \"项目进度符合预期，建议下周安排客户现场POC测试。\",\n  \"attachments\": [],\n  \"todos\": [\n    {\n      \"name\": \"协调POC环境\",\n      \"deadline\": \"2026-05-08T18:00:00+08:00\",\n      \"processor\": [\"user_002\"]\n    }\n  ]\n}"
+    ]
+  },
+  {
+    "num": "81",
+    "name": "deleteComment",
+    "desc": "删除评论",
+    "graphql": [
+      "mutation DeleteComment($id: ID!) {\n  deleteComment(id: $id)\n}"
+    ],
+    "json_vars": [
+      "{ \"id\": \"comment_789\" }"
+    ]
+  },
+  {
+    "num": "82",
+    "name": "listReport",
+    "desc": "日报/周报列表查询",
+    "graphql": [
+      "query ListReport($search: [ReportSearchParam!], $pagination: PaginationParam) {\n  listReport(search: $search, pagination: $pagination) {\n    total\n    skip\n    limit\n    data {\n      id\n      content\n      type\n      target\n      creator { id name }\n      created_at\n    }\n  }\n}"
+    ],
+    "json_vars": [
+      "{\n  \"search\": [\n    {\n      \"creator\": [\"user_001\"],\n      \"type\": [\"daily\"],\n      \"target\": { \"from\": \"2026-05-01T00:00:00+08:00\", \"to\": \"2026-05-31T23:59:59+08:00\" }\n    }\n  ],\n  \"pagination\": { \"skip\": 0, \"limit\": 20 }\n}"
+    ]
+  },
+  {
+    "num": "83",
+    "name": "createReport",
+    "desc": "创建日报/周报",
+    "graphql": [
+      "mutation CreateReport(\n  $content: String!\n  $type: ReportType!\n  $target: Time!\n  $to: [ID!]\n  $attachments: [ID!]\n  $project_infos: [InputProjectInfo!]\n  $immediately_sign_projects: [InputCreateImmediatelySignProject!]\n) {\n  createReport(\n    content: $content\n    type: $type\n    target: $target\n    to: $to\n    attachments: $attachments\n    project_infos: $project_infos\n    immediately_sign_projects: $immediately_sign_projects\n  ) {\n    id\n    content\n    type\n    target\n    created_at\n  }\n}"
+    ],
+    "json_vars": [
+      "{\n  \"content\": \"今日工作：\\n1. 拜访XX银行客户，完成产品演示\\n2. 跟进YY证券POC进度\\n3. 准备下周技术交流材料\",\n  \"type\": \"daily\",\n  \"target\": \"2026-05-02T00:00:00+08:00\",\n  \"to\": [\"user_manager_001\"],\n  \"attachments\": [],\n  \"project_infos\": [\n    {\n      \"project_id\": \"proj_123\",\n      \"info\": \"完成产品演示，客户意向积极\"\n    }\n  ],\n  \"immediately_sign_projects\": []\n}"
+    ]
+  },
+  {
+    "num": "84",
+    "name": "updateReport",
+    "desc": "更新日报/周报",
+    "graphql": [
+      "mutation UpdateReport(\n  $id: ID!\n  $content: String!\n  $to: [ID!]\n  $attachments: [ID!]\n  $project_infos: [InputProjectInfo!]\n  $immediately_sign_projects: [InputUpdateImmediatelySignProject!]\n) {\n  updateReport(\n    id: $id\n    content: $content\n    to: $to\n    attachments: $attachments\n    project_infos: $project_infos\n    immediately_sign_projects: $immediately_sign_projects\n  ) {\n    id\n    content\n    updated_at\n  }\n}"
+    ],
+    "json_vars": [
+      "{\n  \"id\": \"report_123\",\n  \"content\": \"更新后的日报内容...\",\n  \"to\": [\"user_manager_001\"],\n  \"attachments\": [],\n  \"project_infos\": [],\n  \"immediately_sign_projects\": []\n}"
+    ]
+  },
+  {
+    "num": "85",
+    "name": "saleGoal",
+    "desc": "销售目标查询",
+    "graphql": [
+      "query SaleGoal($group: ID, $fiscal_year: Int!) {\n  saleGoal(group: $group, fiscal_year: $fiscal_year) {\n    period\n    fiscal_year\n    is_latest\n    goal {\n      type\n      target\n      finished\n      fiscal_quarter\n      income\n    }\n  }\n}"
+    ],
+    "json_vars": [
+      "{\n  \"group\": null,\n  \"fiscal_year\": 2026\n}"
+    ]
+  },
+  {
+    "num": "86",
+    "name": "saleCommission",
+    "desc": "销售提成查询",
+    "graphql": [
+      "query SaleCommission($group: ID, $fiscal_year: Int!) {\n  saleCommission(group: $group, fiscal_year: $fiscal_year) {\n    user_commission {\n      target\n      finished\n      commission\n      user { id name }\n    }\n    user_group { id name }\n  }\n}"
+    ],
+    "json_vars": [
+      "{\n  \"group\": null,\n  \"fiscal_year\": 2026\n}"
+    ]
+  },
+  {
+    "num": "87",
+    "name": "updateSaleGoal",
+    "desc": "更新销售目标",
+    "graphql": [
+      "mutation UpdateSaleGoal($user_id: String, $group_id: String, $goal: [InputGoalV2!]) {\n  updateSaleGoal(user_id: $user_id, group_id: $group_id, goal: $goal)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"user_id\": \"user_001\",\n  \"group_id\": null,\n  \"goal\": [\n    { \"typeArg\": \"回款\", \"year\": 2026, \"quarter\": 1, \"target\": 500000 },\n    { \"typeArg\": \"合同\", \"year\": 2026, \"quarter\": 1, \"target\": 600000 }\n  ]\n}"
+    ]
+  },
+  {
+    "num": "88",
+    "name": "createCommissionConfig",
+    "desc": "创建任务阶梯",
+    "graphql": [
+      "mutation CreateCommissionConfig(\n  $fiscal_year: Int!\n  $start: String!\n  $end: String!\n  $commission_percent: [InputCommissionPercent!]!\n) {\n  createCommissionConfig(\n    fiscal_year: $fiscal_year\n    start: $start\n    end: $end\n    commission_percent: $commission_percent\n  )\n}"
+    ],
+    "json_vars": [
+      "{\n  \"fiscal_year\": 2026,\n  \"start\": \"0\",\n  \"end\": \"1000000\",\n  \"commission_percent\": [\n    { \"start\": \"0\", \"end\": \"500000\", \"percent\": 5 },\n    { \"start\": \"500000\", \"end\": \"1000000\", \"percent\": 8 }\n  ]\n}"
+    ]
+  },
+  {
+    "num": "89",
+    "name": "me",
+    "desc": "当前用户信息查询",
+    "graphql": [
+      "query Me {\n  me {\n    id\n    name\n    username\n    email\n    phone\n    role\n    enabled\n    department { id name }\n    groups { id name }\n  }\n}"
+    ],
+    "json_vars": []
+  },
+  {
+    "num": "90",
+    "name": "listUser",
+    "desc": "用户列表查询",
+    "graphql": [
+      "query ListUser($search: UserSearchParam!, $pagination: PaginationParam) {\n  listUser(search: $search, pagination: $pagination) {\n    total\n    skip\n    limit\n    data {\n      id\n      name\n      username\n      email\n      phone\n      enabled\n      department { id name }\n      created_at\n    }\n  }\n}"
+    ],
+    "json_vars": [
+      "{\n  \"search\": {\n    \"name\": [\"张\"],\n    \"enabled\": true\n  },\n  \"pagination\": { \"skip\": 0, \"limit\": 20 }\n}"
+    ]
+  },
+  {
+    "num": "91",
+    "name": "createUserGroup",
+    "desc": "创建用户组",
+    "graphql": [
+      "mutation CreateUserGroup(\n  $name: String!\n  $type: UserGroupType!\n  $role_type: UserGroupRoleType\n  $sale_group_type: SaleGroupType\n  $parent: ID\n) {\n  createUserGroup(name: $name, type: $type, role_type: $role_type, sale_group_type: $sale_group_type, parent: $parent) {\n    id\n    name\n    type\n    created_at\n  }\n}"
+    ],
+    "json_vars": [
+      "{\n  \"name\": \"华北销售一组\",\n  \"type\": \"sale\",\n  \"role_type\": \"saler\",\n  \"sale_group_type\": \"first_team\",\n  \"parent\": \"group_parent_001\"\n}"
+    ]
+  },
+  {
+    "num": "92",
+    "name": "updateUserGroupMember",
+    "desc": "更新用户组成员",
+    "graphql": [
+      "mutation UpdateUserGroupMember($id: ID!, $member: [ID!], $leader: [ID!]) {\n  updateUserGroupMember(id: $id, member: $member, leader: $leader)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"id\": \"group_001\",\n  \"member\": [\"user_001\", \"user_002\", \"user_003\"],\n  \"leader\": [\"user_001\"]\n}"
+    ]
+  },
+  {
+    "num": "93",
+    "name": "updatePermission",
+    "desc": "更新权限",
+    "graphql": [
+      "mutation UpdatePermission(\n  $group: ID!\n  $type: PermGroupType!\n  $perm: [Perm!]!\n  $related: InputPermRelated!\n) {\n  updatePermission(group: $group, type: $type, perm: $perm, related: $related)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"group\": \"group_001\",\n  \"type\": \"project\",\n  \"perm\": [\"view\", \"edit\"],\n  \"related\": {\n    \"scope\": \"all\"\n  }\n}"
+    ]
+  },
+  {
+    "num": "94",
+    "name": "listProduct",
+    "desc": "产品列表查询",
+    "graphql": [
+      "query ListProduct {\n  listProduct {\n    id\n    name\n    group { id name }\n    forms { id name }\n    offline\n    created_at\n  }\n}"
+    ],
+    "json_vars": []
+  },
+  {
+    "num": "95",
+    "name": "create_product",
+    "desc": "创建新产品",
+    "graphql": [
+      "mutation CreateProduct($input: InputProductConfig!) {\n  create_product(input: $input)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"input\": {\n    \"id\": \"prod_new_001\",\n    \"name\": \"智能WAF Pro\",\n    \"group\": \"security_product\",\n    \"forms\": [\"hardware\", \"software\"],\n    \"offline\": false\n  }\n}"
+    ]
+  },
+  {
+    "num": "96",
+    "name": "add_product_form",
+    "desc": "增加产品类别",
+    "graphql": [
+      "mutation AddProductForm($product_id: String!, $form_id: ProductFormID!, $tax: Float!, $contract_name: String!, $soft_name: String!) {\n  add_product_form(product_id: $product_id, form_id: $form_id, tax: $tax, contract_name: $contract_name, soft_name: $soft_name)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"product_id\": \"prod_001\",\n  \"form_id\": \"saas\",\n  \"tax\": 13,\n  \"contract_name\": \"SaaS服务\",\n  \"soft_name\": \"智能检测引擎\"\n}"
+    ]
+  },
+  {
+    "num": "97",
+    "name": "addProductVersion",
+    "desc": "发布产品新版本",
+    "graphql": [
+      "mutation AddProductVersion($product_id: ID!, $form_id: ID!, $versions: [InputProductVersionConfig!]!, $note: String!) {\n  addProductVersion(product_id: $product_id, form_id: $form_id, versions: $versions, note: $note)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"product_id\": \"prod_001\",\n  \"form_id\": \"form_001\",\n  \"versions\": [\n    {\n      \"name\": \"标准版\",\n      \"price\": 50000,\n      \"config\": {}\n    }\n  ],\n  \"note\": \"2026年Q2定价更新\"\n}"
+    ]
+  },
+  {
+    "num": "98",
+    "name": "addProductDraft",
+    "desc": "保存产品草稿",
+    "graphql": [
+      "mutation AddProductDraft(\n  $product_id: ID!\n  $form_id: ID!\n  $version_num: Int!\n  $versions: [InputProductVersionConfig!]!\n  $note: String!\n  $push_review: Boolean!\n) {\n  addProductDraft(\n    product_id: $product_id\n    form_id: $form_id\n    version_num: $version_num\n    versions: $versions\n    note: $note\n    push_review: $push_review\n  )\n}"
+    ],
+    "json_vars": [
+      "{\n  \"product_id\": \"prod_001\",\n  \"form_id\": \"form_001\",\n  \"version_num\": 3,\n  \"versions\": [],\n  \"note\": \"草稿版本\",\n  \"push_review\": false\n}"
+    ]
+  },
+  {
+    "num": "99",
+    "name": "listPriceApproval",
+    "desc": "价格审批列表查询",
+    "graphql": [
+      "query ListPriceApproval($search: PriceApprovalSearchParam!, $pagination: PaginationParam) {\n  listPriceApproval(search: $search, pagination: $pagination) {\n    total\n    skip\n    limit\n    data {\n      id\n      project { id name }\n      type\n      status\n      creator { name }\n      created_at\n    }\n  }\n}"
+    ],
+    "json_vars": [
+      "{\n  \"search\": {\n    \"project_id\": [\"proj_123\"],\n    \"status\": [\"pending\"]\n  },\n  \"pagination\": { \"skip\": 0, \"limit\": 20 }\n}"
+    ]
+  },
+  {
+    "num": "100",
+    "name": "createProjectPriceApproval",
+    "desc": "发起价格审批",
+    "graphql": [
+      "mutation CreateProjectPriceApproval(\n  $project_id: ID!\n  $type: PriceApprovalType!\n  $special_reason: InputPriceApprovalSpecialReason\n  $input_product: InputProductPriceApproval\n  $input_service: InputServicePriceApproval\n  $input_frame_product: InputFrameProductPriceApproval\n  $input_frame_service: InputFrameServicePriceApproval\n) {\n  createProjectPriceApproval(\n    project_id: $project_id\n    type: $type\n    special_reason: $special_reason\n    input_product: $input_product\n    input_service: $input_service\n    input_frame_product: $input_frame_product\n    input_frame_service: $input_frame_service\n  )\n}"
+    ],
+    "json_vars": [
+      "{\n  \"project_id\": \"proj_123\",\n  \"type\": \"product\",\n  \"special_reason\": null,\n  \"input_product\": {\n    \"discount\": 85,\n    \"reason\": \"战略客户折扣\"\n  },\n  \"input_service\": null,\n  \"input_frame_product\": null,\n  \"input_frame_service\": null\n}"
+    ]
+  },
+  {
+    "num": "101",
+    "name": "approveProjectPriceApproval",
+    "desc": "处理价格审批",
+    "graphql": [
+      "mutation ApproveProjectPriceApproval($id: ID!, $result: Boolean!, $note: String!, $source: String) {\n  approveProjectPriceApproval(id: $id, result: $result, note: $note, source: $source)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"id\": \"pa_456\",\n  \"result\": true,\n  \"note\": \"同意特价申请\",\n  \"source\": \"web\"\n}"
+    ]
+  },
+  {
+    "num": "102",
+    "name": "revertProjectPriceApproval",
+    "desc": "撤回价格审批",
+    "graphql": [
+      "mutation RevertProjectPriceApproval($id: ID!) {\n  revertProjectPriceApproval(id: $id)\n}"
+    ],
+    "json_vars": [
+      "{ \"id\": \"pa_456\" }"
+    ]
+  },
+  {
+    "num": "103",
+    "name": "add_service_cost_detail",
+    "desc": "评估安服成本",
+    "graphql": [
+      "mutation AddServiceCostDetail(\n  $id: ID!\n  $details: [InputServiceCostDetail!]!\n  $desc: InputServiceCostDesc!\n) {\n  add_service_cost_detail(id: $id, details: $details, desc: $desc)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"id\": \"proj_123\",\n  \"details\": [\n    {\n      \"service_type\": \"penetration_test\",\n      \"work_day\": 10,\n      \"unit_price\": 3000,\n      \"total_price\": 30000\n    }\n  ],\n  \"desc\": {\n    \"note\": \"渗透测试服务成本评估\",\n    \"total\": 30000\n  }\n}"
+    ]
+  },
+  {
+    "num": "104",
+    "name": "listMachineStock",
+    "desc": "整机库存列表查询",
+    "graphql": [
+      "query ListMachineStock($search: [MachineStockSearchParam!], $pagination: PaginationParam) {\n  listMachineStock(search: $search, pagination: $pagination) {\n    total\n    skip\n    limit\n    data {\n      id\n      serial\n      product_type\n      product_model\n      in_stock_time\n      stock_company\n      project { id name }\n      saler { name }\n      tech_support { name }\n      created_at\n    }\n  }\n}"
+    ],
+    "json_vars": [
+      "{\n  \"search\": [\n    {\n      \"serial_like\": [\"CT\"],\n      \"product_model\": \"WAF-2000\"\n    }\n  ],\n  \"pagination\": { \"skip\": 0, \"limit\": 20 }\n}"
+    ]
+  },
+  {
+    "num": "105",
+    "name": "updateMachineStockBasic",
+    "desc": "修改整机库存基本信息",
+    "graphql": [
+      "mutation UpdateMachineStockBasic($update: [MachineStockInput!]) {\n  updateMachineStockBasic(update: $update)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"update\": [\n    {\n      \"serial\": \"CT2026001\",\n      \"product_type\": \"WAF\",\n      \"product_model\": \"WAF-2000\",\n      \"stock_company\": \"北京\"\n    }\n  ]\n}"
+    ]
+  },
+  {
+    "num": "106",
+    "name": "create_hardware_after_sale",
+    "desc": "创建硬件设备售后",
+    "graphql": [
+      "mutation CreateHardwareAfterSale($input: InputHardwareAfterSale!) {\n  create_hardware_after_sale(input: $input)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"input\": {\n    \"project_id\": \"proj_123\",\n    \"type\": \"repair\",\n    \"problem_product\": [\n      {\n        \"product_id\": \"prod_001\",\n        \"form_id\": \"form_001\",\n        \"machines\": [\n          { \"machine\": \"CT2026001\", \"component\": [] }\n        ]\n      }\n    ],\n    \"need_backup_machine\": true,\n    \"operation_time\": \"2026-05-10T10:00:00+08:00\",\n    \"reason\": \"电源模块故障\",\n    \"way\": \"express\",\n    \"note\": \"需要尽快处理\"\n  }\n}"
+    ]
+  },
+  {
+    "num": "107",
+    "name": "project_income_plan",
+    "desc": "查询项目应收计划",
+    "graphql": [
+      "query ProjectIncomePlan($project_id: ID!) {\n  project_income_plan(project_id: $project_id) {\n    income_plan {\n      id\n      income_milestone\n      income_type\n      contract_condition\n      income_way\n      income_rate\n      money\n      income_at\n      expected_payment_date\n      grace_period\n      assessment_date\n    }\n    revenue_with_overdue_data {\n      revenue_id\n      revenue_amount\n      overdue_days\n    }\n  }\n}"
+    ],
+    "json_vars": [
+      "{ \"project_id\": \"proj_123\" }"
+    ]
+  },
+  {
+    "num": "108",
+    "name": "create_income_plan",
+    "desc": "创建应收计划",
+    "graphql": [
+      "mutation CreateIncomePlan($project_id: ID!, $param: IncomePlanParam!) {\n  create_income_plan(project_id: $project_id, param: $param)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"project_id\": \"proj_123\",\n  \"param\": {\n    \"income_milestone\": \"product_final_acceptance\",\n    \"income_type\": \"acceptance_payment\",\n    \"contract_condition\": \"产品终验后30天内付款\",\n    \"income_way\": \"wire_transfer\",\n    \"income_rate\": 0.6,\n    \"income_period\": 30,\n    \"acceptance_period\": 0,\n    \"income_period_basis\": \"contract_date\",\n    \"money\": \"180000\",\n    \"income_at\": \"2026-08-01T00:00:00+08:00\",\n    \"auto_compute\": true,\n    \"note\": \"验收款\",\n    \"grace_period\": 30,\n    \"assessment_date\": \"2026-09-01T00:00:00+08:00\"\n  }\n}"
+    ]
+  },
+  {
+    "num": "109",
+    "name": "create_shipping_order",
+    "desc": "创建发货单",
+    "graphql": [
+      "mutation CreateShippingOrder($project_id: String!, $input: InputShippingOrder!) {\n  create_shipping_order(project_id: $project_id, input: $input)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"project_id\": \"proj_123\",\n  \"input\": {\n    \"order_date\": \"2026-05-10T00:00:00+08:00\",\n    \"shipping_address_id\": \"addr_001\",\n    \"products\": [\n      { \"product_id\": \"prod_001\", \"form_id\": \"form_001\", \"quantity\": 2 }\n    ],\n    \"note\": \"标准发货\"\n  }\n}"
+    ]
+  },
+  {
+    "num": "110",
+    "name": "config",
+    "desc": "系统配置查询",
+    "graphql": [
+      "query Config {\n  config {\n    confirm_revenue_date\n    product_approval_master { id name }\n    service_approval_master { id name }\n    company_apply_sale_manager { id name }\n    product_delivery_approver { id name }\n    service_delivery_approver { id name }\n    delivery_finance_approver { id name }\n    sensitive_word_list\n  }\n}"
+    ],
+    "json_vars": []
+  },
+  {
+    "num": "111",
+    "name": "updateConfigProductDeliveryApprover",
+    "desc": "修改产品交付审批人",
+    "graphql": [
+      "mutation UpdateConfigProductDeliveryApprover($id: String!) {\n  updateConfigProductDeliveryApprover(id: $id)\n}"
+    ],
+    "json_vars": [
+      "{ \"id\": \"user_001\" }"
+    ]
+  },
+  {
+    "num": "112",
+    "name": "updateConfigServiceDeliveryApprover",
+    "desc": "修改安服交付审批人",
+    "graphql": [
+      "mutation UpdateConfigServiceDeliveryApprover($id: String!) {\n  updateConfigServiceDeliveryApprover(id: $id)\n}"
+    ],
+    "json_vars": [
+      "{ \"id\": \"user_002\" }"
+    ]
+  },
+  {
+    "num": "113",
+    "name": "list_business_chance",
+    "desc": "商机报备列表查询",
+    "graphql": [
+      "query ListBusinessChance($search: BusinessChanceSearchParam, $pagination: PaginationParam) {\n  list_business_chance(search: $search, pagination: $pagination) {\n    total\n    skip\n    limit\n    data {\n      id\n      project_name\n      company { name }\n      channel { name }\n      status\n      apply_status\n      claim_by { name }\n      due_at\n      created_at\n    }\n  }\n}"
+    ],
+    "json_vars": [
+      "{\n  \"search\": {\n    \"project_name\": \"银行\",\n    \"apply_status\": [\"waiting\"],\n    \"status\": \"valid\"\n  },\n  \"pagination\": { \"skip\": 0, \"limit\": 20 }\n}"
+    ]
+  },
+  {
+    "num": "114",
+    "name": "createBusinessChance",
+    "desc": "创建商机报备",
+    "graphql": [
+      "mutation CreateBusinessChance(\n  $channel_id: ID!\n  $channel_contact: String!\n  $contact_information: String!\n  $company_id: String!\n  $project_name: String!\n  $product_list: [InputProductChance!]!\n  $due_at: Time!\n  $claim_by: ID!\n  $project_contact: String!\n  $project_address: String!\n  $department_used: String!\n  $delivery_type: DeliveryType!\n  $info: String!\n  $attachments: [ID!]\n) {\n  createBusinessChance(\n    channel_id: $channel_id\n    channel_contact: $channel_contact\n    contact_information: $contact_information\n    company_id: $company_id\n    project_name: $project_name\n    product_list: $product_list\n    due_at: $due_at\n    claim_by: $claim_by\n    project_contact: $project_contact\n    project_address: $project_address\n    department_used: $department_used\n    delivery_type: $delivery_type\n    info: $info\n    attachments: $attachments\n  )\n}"
+    ],
+    "json_vars": [
+      "{\n  \"channel_id\": \"chan_001\",\n  \"channel_contact\": \"李四\",\n  \"contact_information\": \"13900139000\",\n  \"company_id\": \"comp_456\",\n  \"project_name\": \"XX银行安全加固\",\n  \"product_list\": [{ \"product_id\": \"prod_001\", \"form_id\": \"form_001\", \"price\": 200000 }],\n  \"due_at\": \"2026-08-01T00:00:00+08:00\",\n  \"claim_by\": \"user_001\",\n  \"project_contact\": \"张三\",\n  \"project_address\": \"北京市海淀区\",\n  \"department_used\": \"信息技术部\",\n  \"delivery_type\": \"self\",\n  \"info\": \"客户有明确采购意向\",\n  \"attachments\": []\n}"
+    ]
+  },
+  {
+    "num": "115",
+    "name": "reviewBusinessChance",
+    "desc": "审批商机报备",
+    "graphql": [
+      "mutation ReviewBusinessChance(\n  $id: ID!\n  $status: Boolean!\n  $channel_claim_by: String!\n  $reject_type: BusinessChanceRejectType\n  $reject_chance_id: ID!\n  $reject_project_id: ID!\n  $note: String!\n  $desc: String!\n) {\n  reviewBusinessChance(\n    id: $id\n    status: $status\n    channel_claim_by: $channel_claim_by\n    reject_type: $reject_type\n    reject_chance_id: $reject_chance_id\n    reject_project_id: $reject_project_id\n    note: $note\n    desc: $desc\n  )\n}"
+    ],
+    "json_vars": [
+      "{\n  \"id\": \"bc_789\",\n  \"status\": true,\n  \"channel_claim_by\": \"user_001\",\n  \"reject_type\": null,\n  \"reject_chance_id\": \"\",\n  \"reject_project_id\": \"\",\n  \"note\": \"同意报备\",\n  \"desc\": \"\"\n}"
+    ]
+  },
+  {
+    "num": "116",
+    "name": "list_solution",
+    "desc": "解决方案列表查询",
+    "graphql": [
+      "query ListSolution($search: SolutionSearchParam, $pagination: PaginationParam) {\n  list_solution(search: $search, pagination: $pagination) {\n    total\n    skip\n    limit\n    data {\n      id\n      name\n      type\n      status\n      creator { name }\n      created_at\n    }\n  }\n}"
+    ],
+    "json_vars": [
+      "{\n  \"search\": {\n    \"name\": \"金融\",\n    \"status\": [\"published\"]\n  },\n  \"pagination\": { \"skip\": 0, \"limit\": 20 }\n}"
+    ]
+  },
+  {
+    "num": "117",
+    "name": "create_solution",
+    "desc": "新建解决方案",
+    "graphql": [
+      "mutation CreateSolution($input: InputSolutionVersion!, $push_review: Boolean!) {\n  create_solution(input: $input, push_review: $push_review)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"input\": {\n    \"name\": \"金融行业Web安全解决方案\",\n    \"industry_ids\": [\"ind_finance\"],\n    \"product_ids\": [\"prod_001\"],\n    \"content\": \"方案详情...\",\n    \"attachments\": []\n  },\n  \"push_review\": true\n}"
+    ]
+  },
+  {
+    "num": "118",
+    "name": "review_solution",
+    "desc": "审核解决方案",
+    "graphql": [
+      "mutation ReviewSolution($solution_version_id: String!, $status: Boolean!, $reason: String!) {\n  review_solution(solution_version_id: $solution_version_id, status: $status, reason: $reason)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"solution_version_id\": \"sv_456\",\n  \"status\": true,\n  \"reason\": \"内容完整，同意发布\"\n}"
+    ]
+  },
+  {
+    "num": "119",
+    "name": "list_opportunity_scenario",
+    "desc": "机会场景列表查询",
+    "graphql": [
+      "query ListOpportunityScenario($search: OpportunityScenarioSearchParam!, $pagination: PaginationParam, $sort_by: SortBy) {\n  list_opportunity_scenario(search: $search, pagination: $pagination, sort_by: $sort_by) {\n    total\n    skip\n    limit\n    data {\n      id\n      name\n      type\n      status\n      creator { name }\n      created_at\n    }\n  }\n}"
+    ],
+    "json_vars": [
+      "{\n  \"search\": {\n    \"name\": \"等保\",\n    \"type\": [\"industry\"]\n  },\n  \"pagination\": { \"skip\": 0, \"limit\": 20 },\n  \"sort_by\": { \"by\": \"updated_at\", \"order\": -1 }\n}"
+    ]
+  },
+  {
+    "num": "120",
+    "name": "create_opportunity_scenario",
+    "desc": "创建机会场景",
+    "graphql": [
+      "mutation CreateOpportunityScenario($input: InputOpportunityScenario!) {\n  create_opportunity_scenario(input: $input)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"input\": {\n    \"type\": \"industry\",\n    \"industry_ids\": [\"ind_finance\"],\n    \"group_ids\": [],\n    \"name\": \"金融行业等保2.0合规\",\n    \"description\": \"针对金融客户的等保合规需求\",\n    \"customer_persona\": \"信息安全总监\",\n    \"budget\": \"50万-100万\",\n    \"time_window\": \"2026年Q2-Q3\",\n    \"closed_loop_time\": 90,\n    \"product\": [{ \"product_id\": \"prod_001\", \"form_id\": \"form_001\" }],\n    \"claim_by_ids\": [\"user_001\"],\n    \"has_solution\": true,\n    \"solution_link\": \"https://wiki.example.com\",\n    \"solution_material\": \"\",\n    \"sale_guide\": \"\",\n    \"training_video\": \"\",\n    \"solution_material_list\": [],\n    \"sale_guide_list\": [],\n    \"training_video_list\": [],\n    \"success_company_ids\": []\n  }\n}"
+    ]
+  },
+  {
+    "num": "121",
+    "name": "list_special_deals_trace_back_await_project",
+    "desc": "特价回溯待回溯项目查询",
+    "graphql": [
+      "query ListSpecialDealsTraceBackAwaitProject($search: SpecialDealsTraceBackAwaitProjectSearchParam, $pagination: PaginationParam) {\n  list_special_deals_trace_back_await_project(search: $search, pagination: $pagination) {\n    total\n    skip\n    limit\n    data {\n      id\n      project { id name }\n      company { name }\n      special_deal_amount\n      created_at\n    }\n  }\n}"
+    ],
+    "json_vars": [
+      "{\n  \"search\": {\n    \"claim_by\": [\"user_001\"]\n  },\n  \"pagination\": { \"skip\": 0, \"limit\": 20 }\n}"
+    ]
+  },
+  {
+    "num": "122",
+    "name": "create_special_deals_trace_backs",
+    "desc": "发起特价回溯",
+    "graphql": [
+      "mutation CreateSpecialDealsTraceBacks(\n  $search: SpecialDealsTraceBackAwaitProjectSearchParam\n  $random_inspection_type: SpecialDealsTraceBackRandomInspectionType!\n  $random_inspection_number: Int\n) {\n  create_special_deals_trace_backs(\n    search: $search\n    random_inspection_type: $random_inspection_type\n    random_inspection_number: $random_inspection_number\n  )\n}"
+    ],
+    "json_vars": [
+      "{\n  \"search\": null,\n  \"random_inspection_type\": \"all\",\n  \"random_inspection_number\": null\n}"
+    ]
+  },
+  {
+    "num": "123",
+    "name": "submit_paper_acceptance_form",
+    "desc": "纸质验收单提交",
+    "graphql": [
+      "mutation SubmitPaperAcceptanceForm(\n  $id: String!\n  $type: PaperAcceptanceFormType!\n  $archive_location: PaperAcceptanceFormArchiveLocation\n  $tracking_number: String!\n  $deprecated_reason: String!\n) {\n  submit_paper_acceptance_form(\n    id: $id\n    type: $type\n    archive_location: $archive_location\n    tracking_number: $tracking_number\n    deprecated_reason: $deprecated_reason\n  )\n}"
+    ],
+    "json_vars": [
+      "{\n  \"id\": \"paf_001\",\n  \"type\": \"mail\",\n  \"archive_location\": \"beijing_office\",\n  \"tracking_number\": \"SF123456789\",\n  \"deprecated_reason\": \"\"\n}"
+    ]
+  },
+  {
+    "num": "124",
+    "name": "create_announcement",
+    "desc": "创建公告",
+    "graphql": [
+      "mutation CreateAnnouncement($title: String!, $content: String!, $notice_group_ids: [String!]!) {\n  create_announcement(title: $title, content: $content, notice_group_ids: $notice_group_ids)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"title\": \"五一放假通知\",\n  \"content\": \"2026年五一假期安排如下...\",\n  \"notice_group_ids\": [\"group_all\"]\n}"
+    ]
+  },
+  {
+    "num": "125",
+    "name": "create_todo_list",
+    "desc": "创建待办事项",
+    "graphql": [
+      "mutation CreateTodoList(\n  $name: String!\n  $type: TodoType!\n  $relation: String!\n  $deadline: Time!\n  $processor: [ID!]!\n) {\n  create_todo_list(name: $name, type: $type, relation: $relation, deadline: $deadline, processor: $processor)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"name\": \"准备合同文本\",\n  \"type\": \"contract\",\n  \"relation\": \"proj_123\",\n  \"deadline\": \"2026-05-10T18:00:00+08:00\",\n  \"processor\": [\"user_001\", \"user_002\"]\n}"
+    ]
+  },
+  {
+    "num": "126",
+    "name": "finished_todo_list",
+    "desc": "完成待办事项",
+    "graphql": [
+      "mutation FinishedTodoList($id: ID!, $is_finished: Boolean!, $completionNote: String!) {\n  finished_todo_list(id: $id, is_finished: $is_finished, completionNote: $completionNote)\n}"
+    ],
+    "json_vars": [
+      "{\n  \"id\": \"todo_456\",\n  \"is_finished\": true,\n  \"completionNote\": \"已完成合同准备\"\n}"
+    ]
+  },
+  {
+    "num": "127",
+    "name": "projectStatistics",
+    "desc": "项目统计查询",
+    "graphql": [
+      "query ProjectStatistics($search: ProjectSearchParam!, $pagination: PaginationParam, $sort_by: SortBy) {\n  projectStatistics(search: $search, pagination: $pagination, sort_by: $sort_by) {\n    projects {\n      total\n      skip\n      limit\n      data { id name stage amount company { name } }\n    }\n    statistics {\n      total_amount\n      total_actual_amount\n      project_count\n      contract_count\n    }\n    company_num\n  }\n}"
+    ],
+    "json_vars": [
+      "{\n  \"search\": {\n    \"stage\": [\"deal\"],\n    \"deal_date\": { \"from\": \"2026-01-01T00:00:00+08:00\", \"to\": \"2026-12-31T23:59:59+08:00\" }\n  },\n  \"pagination\": { \"skip\": 0, \"limit\": 20 },\n  \"sort_by\": { \"by\": \"deal_date\", \"order\": -1 }\n}"
+    ]
+  },
+  {
+    "num": "128",
+    "name": "paymentStatistics",
+    "desc": "回款统计查询",
+    "graphql": [
+      "query PaymentStatistics($search: ProjectSearchParam!, $pagination: PaginationParam, $sort_by: SortBy) {\n  paymentStatistics(search: $search, pagination: $pagination, sort_by: $sort_by) {\n    projects {\n      total\n      skip\n      limit\n      data { id name amount company { name } }\n    }\n    statistics {\n      total_payment\n      total_plan_payment\n      project_count\n    }\n    company_num\n  }\n}"
+    ],
+    "json_vars": [
+      "{\n  \"search\": {\n    \"claim_by\": [\"user_001\"]\n  },\n  \"pagination\": { \"skip\": 0, \"limit\": 20 },\n  \"sort_by\": { \"by\": \"updatedAt\", \"order\": -1 }\n}"
+    ]
+  },
+  {
+    "num": "129",
+    "name": "presaleStatistics",
+    "desc": "售前数据统计",
+    "graphql": [
+      "query PresaleStatistics($search: ProjectSearchParam!) {\n  presaleStatistics(search: $search) {\n    statistics {\n      domain\n      project_count\n      total_amount\n    }\n  }\n}"
+    ],
+    "json_vars": [
+      "{\n  \"search\": {\n    \"stage\": [\"tech_pre_research\", \"plan_discuss\"]\n  }\n}"
+    ]
+  },
+  {
+    "num": "130",
+    "name": "exportExcelFile",
+    "desc": "导出项目统计Excel",
+    "graphql": [
+      "query ExportExcelFile(\n  $search: ProjectSearchParam!\n  $sort_by: [SortBy!]\n  $deal_revenue_type: [ExportDealRevenueType!]\n  $type: ExportType\n) {\n  exportExcelFile(search: $search, sort_by: $sort_by, deal_revenue_type: $deal_revenue_type, type: $type) {\n    url\n    msg\n  }\n}"
+    ],
+    "json_vars": [
+      "{\n  \"search\": {\n    \"stage\": [\"deal\"],\n    \"deal_date\": { \"from\": \"2026-01-01T00:00:00+08:00\", \"to\": \"2026-12-31T23:59:59+08:00\" }\n  },\n  \"sort_by\": [{ \"by\": \"deal_date\", \"order\": -1 }],\n  \"deal_revenue_type\": [\"deal_amount\", \"revenue_amount\"],\n  \"type\": \"statistic\"\n}"
+    ]
+  },
+  {
+    "num": "131",
+    "name": "deal_revenue_perf_ranking",
+    "desc": "销售排行榜查询",
+    "graphql": [
+      "query DealRevenuePerfRanking(\n  $search: ProjectSearchParam!\n  $fiscal_year: Int!\n  $deal_weight: Float!\n  $revenue_weight: Float!\n) {\n  deal_revenue_perf_ranking(\n    search: $search\n    fiscal_year: $fiscal_year\n    deal_weight: $deal_weight\n    revenue_weight: $revenue_weight\n  ) {\n    ranking {\n      user { id name }\n      deal_amount\n      revenue_amount\n      score\n    }\n  }\n}"
+    ],
+    "json_vars": [
+      "{\n  \"search\": {\n    \"stage\": [\"deal\"],\n    \"deal_date\": { \"from\": \"2026-01-01T00:00:00+08:00\", \"to\": \"2026-12-31T23:59:59+08:00\" }\n  },\n  \"fiscal_year\": 2026,\n  \"deal_weight\": 0.6,\n  \"revenue_weight\": 0.4\n}"
+    ]
+  }
+]
